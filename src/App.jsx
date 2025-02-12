@@ -3,7 +3,7 @@ import Signup from "./pages/auth/Signup";
 import Home from "./pages/screens/Home";
 import CompleteProfile from "./pages/screens/completeProfile/CompleteProfile";
 // import Chat from "./pages/screens/chat/Chat";
-import Library from "./pages/user/library/library";
+import Library from "./pages/user/library/Library";
 import User from "./pages/user";
 import Admin from "./pages/admin";
 import AddBlog from "./pages/admin/addBlog/AddBlog";
@@ -19,7 +19,7 @@ function App() {
         <Route path="/auth" element={<Signup />} />
         <Route path="/" element={<Home />} />
         {/* <Route path="chat" element={<Chat />} /> */}
-          <Route path="complete-profile" element={<CompleteProfile />} />
+        <Route path="complete-profile" element={<CompleteProfile />} />
         <Route path="/user" element={<User />}>
           <Route index element={<Library />} />
           <Route path="chat" element={<Chat />} />
@@ -27,12 +27,13 @@ function App() {
         </Route>
         <Route path="/admin" element={<Admin />}>
           <Route index element={<AddBlog />} />
-          <Route path="library-topic-details" element={<LibraryTopicDetails />} />
-
+          <Route
+            path="library-topic-details"
+            element={<LibraryTopicDetails />}
+          />
         </Route>
       </Routes>
       <Toaster position="top-right" toastOptions={{ duration: 2000 }} />
-
     </BrowserRouter>
   );
 }
