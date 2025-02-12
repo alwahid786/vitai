@@ -1,9 +1,6 @@
-import React from "react";
-import Aside from "../../layout/aside/Aside";
-import Header from "../../layout/header/Header";
 import Main from "../../layout/Main";
-import AdminHeader from "./layout/header/AdminHeader";
 import AdminAside from "./layout/adminAside/AdminAside";
+import AdminHeader from "./layout/header/AdminHeader";
 
 const Admin = () => {
   return (
@@ -22,5 +19,3 @@ const Admin = () => {
 };
 
 export default Admin;
-
-
