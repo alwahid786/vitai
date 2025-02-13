@@ -13,7 +13,7 @@ const LibraryTopicDetails = lazy(() =>
   import("./pages/admin/libraryTopicDetails/LibraryTopicDetails")
 );
 const Profile = lazy(() => import("./pages/admin/profile/Profile"));
-const User = lazy(() => import("./pages/User"));
+const User = lazy(() => import("./pages/user"));
 const Chat = lazy(() => import("./pages/user/chat&search/Chat"));
 const Library = lazy(() => import("./pages/user/library/Library"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
