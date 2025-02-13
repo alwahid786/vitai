@@ -9,14 +9,18 @@ import LoadingScreen from "./components/LoadingScreen";
 // Lazy Loaded Components
 const Admin = lazy(() => import("./pages/admin"));
 const AddBlog = lazy(() => import("./pages/admin/addBlog/AddBlog"));
-const LibraryTopicDetails = lazy(() => import("./pages/admin/libraryTopicDetails/LibraryTopicDetails"));
+const LibraryTopicDetails = lazy(() =>
+  import("./pages/admin/libraryTopicDetails/LibraryTopicDetails")
+);
 const Profile = lazy(() => import("./pages/admin/profile/Profile"));
 const User = lazy(() => import("./pages/user"));
 const Chat = lazy(() => import("./pages/user/chat&search/Chat"));
-const Library = lazy(() => import("./pages/user/library/library"));
+const Library = lazy(() => import("./pages/user/library/Library"));
 const Signup = lazy(() => import("./pages/auth/Signup"));
 const Home = lazy(() => import("./pages/screens/Home"));
-const CompleteProfile = lazy(() => import("./pages/screens/completeProfile/CompleteProfile"));
+const CompleteProfile = lazy(() =>
+  import("./pages/screens/completeProfile/CompleteProfile")
+);
 
 // A separate component to handle routes and listen for location changes
 function AppRoutes() {
@@ -54,7 +58,10 @@ function AppRoutes() {
       <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
         <Route path="/admin" element={<Admin />}>
           <Route index element={<AddBlog />} />
-          <Route path="library-topic-details" element={<LibraryTopicDetails />} />
+          <Route
+            path="library-topic-details"
+            element={<LibraryTopicDetails />}
+          />
         </Route>
       </Route>
 
