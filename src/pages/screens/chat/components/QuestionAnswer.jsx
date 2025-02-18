@@ -13,7 +13,7 @@ import { FaRegShareFromSquare, FaVolumeHigh } from "react-icons/fa6";
 import { GrGallery, GrRefresh } from "react-icons/gr";
 import { IoVolumeMute } from "react-icons/io5";
 import { MdVideoLibrary } from "react-icons/md";
-const QuestionAnswer = ({ chat, handleUpdateChatTitle }) => {
+const QuestionAnswer = ({ chat, handleUpdateChatTitle, setIsAdmin, isAdmin }) => {
   const lastItemRef = useRef(null);
   const containsHtml = /<\/?[a-z][\s\S]*>/i.test(chat.detailed_answer);
 
@@ -28,6 +28,7 @@ const QuestionAnswer = ({ chat, handleUpdateChatTitle }) => {
   const [disliked, setDisliked] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [copied, setCopied] = useState(false);
+  console.log("role", isAdmin)
 
   useEffect(() => {
     if (isEditing) {
@@ -112,7 +113,7 @@ const QuestionAnswer = ({ chat, handleUpdateChatTitle }) => {
     <section ref={lastItemRef} className="flex flex-col mt-6 gap-6  ">
       <div className="flex w-full items-center space-x-6">
         <div className="w-full pl-14 space-y-6">
-          <div className="shadow-md flex items-center justify-between gap-4 rounded-lg h-16 w-full text-start p-4">
+         {!isAdmin&& <div className="shadow-md flex items-center justify-between gap-4 rounded-lg h-16 w-full text-start p-4">
             {isEditing ? (
               <div className="flex w-full items-center gap-3">
                 <input
@@ -124,7 +125,6 @@ const QuestionAnswer = ({ chat, handleUpdateChatTitle }) => {
                   onKeyDown={(e) => e.key === "Enter" && handleTitleUpdate()}
                   className="w-full p-2 border border-gray-300 rounded-md focus:outline-none"
                 />
-                {/* Cancel button - appears only in edit mode */}
                 <FaTimes
                   onClick={handleCancelUpdate}
                   className="cursor-pointer text-red-500"
@@ -140,21 +140,23 @@ const QuestionAnswer = ({ chat, handleUpdateChatTitle }) => {
               <FaRegEdit />
             </section>
           </div>
-
+}
           <div className="flex w-full relative gap-5 items-center group">
             {/* Floating Icons on Hover */}
-            <div className="text-2xl absolute flex flex-col gap-2 text-primary left-[-30px] items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              {icons.map(({ icon: Icon, action, isCopyIcon }, index) => (
-                <IconWrapper key={index} onClick={action}>
-                  <Icon
-                    fontSize={12}
-                    className={`${
-                      isCopyIcon && copied ? "text-[#008FF6]" : "text-[#1B2559]"
-                    }`}
-                  />
-                </IconWrapper>
-              ))}
-            </div>
+            {!isAdmin && (
+
+              <div className="text-2xl absolute flex flex-col gap-2 text-primary left-[-30px] items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                {icons.map(({ icon: Icon, action, isCopyIcon }, index) => (
+                  <IconWrapper key={index} onClick={action}>
+                    <Icon
+                      fontSize={12}
+                      className={`${isCopyIcon && copied ? "text-[#008FF6]" : "text-[#1B2559]"
+                        }`}
+                    />
+                  </IconWrapper>
+                ))}
+              </div>
+            )}
 
             {/* Answer Section */}
             <div className="shadow-md text-start p-4 rounded-lg border-primary w-full">
@@ -184,10 +186,13 @@ const QuestionAnswer = ({ chat, handleUpdateChatTitle }) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 text-2xl text-primary">
-          <GrGallery />
-          <MdVideoLibrary />
-        </div>
+        {!isAdmin && (
+
+          <div className="flex flex-col gap-4 text-2xl text-primary">
+            <GrGallery />
+            <MdVideoLibrary />
+          </div>
+        )}
       </div>
     </section>
   );

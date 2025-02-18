@@ -25,9 +25,10 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   addFolder: {
-    folderId: null,
+    folderId: "d0dae127-e89e-4923-8bbd-d9c6416228e9",
     add: false,
   },
+  contentId: null,
 };
 
 const sidebarSlice = createSlice({
@@ -37,8 +38,11 @@ const sidebarSlice = createSlice({
     setAddFolderData: (state, action) => {
       state.addFolder = { ...action.payload };
     },
+    setContentId: (state, action) => {
+      state.contentId.folderId = action.payload;
+    }
   },
 });
 
-export const { setAddFolderData } = sidebarSlice.actions;  // Export setAddFolderData here
+export const { setAddFolderData , setContentId} = sidebarSlice.actions;  // Export setAddFolderData here
 export default sidebarSlice.reducer;

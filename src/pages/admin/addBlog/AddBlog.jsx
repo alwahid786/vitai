@@ -5,7 +5,7 @@ import { PiChatsCircle } from 'react-icons/pi';
 import { useDispatch, useSelector } from 'react-redux';
 import Modal from '../../../components/modals/Modal';
 import Button from '../../../components/small/Button';
-import { useAddNewFolderMutation, useAiLearningSearchMutation, useGetFolderStructureQuery } from '../../../redux/apis/apiSlice';
+import { useAddNewFolderMutation, useAiLearningSearchMutation, useDeleteContentByIdMutation, useDeleteFolderByIdMutation, useEditContentByIdMutation, useEditFolderByIdMutation, useGetFolderStructureQuery } from '../../../redux/apis/apiSlice';
 // import { setAddFolderData } from '../../../redux/slice/sidebarSlice';
 import QuestionAnswer from '../../screens/chat/components/QuestionAnswer';
 import LibraryInput from '../../user/library/components/LibraryInput';
@@ -14,6 +14,9 @@ import InfoCard from './components/InfoCard';
 import { setAddFolderData } from '../../../redux/slice/sidebarSlice';
 import DOMPurify from 'dompurify';
 import DynamicContent from './components/DynamicContent';
+// import Input from "../small/Input";
+import Input from "../../../components/small/Input";
+import CustomInput from '../../../components/small/CustomInput';
 
 function AddBlog() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,6 +35,77 @@ function AddBlog() {
     const [addNewFolder, { isLoading: addNewFolderLoading }] = useAddNewFolderMutation();
     const [aiLearningSearch] = useAiLearningSearchMutation();
     const { data: allFolders } = useGetFolderStructureQuery();
+
+
+
+    ////////////
+
+    const [folderId, setFolderId] = useState("");
+    const [contentId, setContentId] = useState("");
+    const [newName, setNewName] = useState("");
+    const [newTitle, setNewTitle] = useState("");
+    const [title, setTitle] = useState("");
+    // const [content, setContent] = useState("");
+
+
+    const [editFolder] = useEditFolderByIdMutation();
+    const [deleteFolder] = useDeleteFolderByIdMutation();
+    const [editContent] = useEditContentByIdMutation();
+    const [deleteContent] = useDeleteContentByIdMutation();
+
+    const handleEditFolder = async () => {
+        try {
+            await editFolder({ folderId, newName }).unwrap();
+            console.log("Folder renamed successfully");
+        } catch (error) {
+            console.error("Error renaming folder:", error);
+        }
+    };
+
+    const handleDeleteFolder = async () => {
+        try {
+            await deleteFolder(folderId).unwrap();
+            console.log("Folder deleted successfully");
+        } catch (error) {
+            console.error("Error deleting folder:", error);
+        }
+    };
+
+
+
+    const handleEditContent = async () => {
+        try {
+            if (!selectedItem?.contentId) return;
+            const response = await editContent({ contentId: selectedItem.contentId, newTitle }).unwrap();
+            toast.success(response.message);
+            console.log("Content renamed successfully", response);
+            setTopicModalOpen(false)
+            setIsEditing(false);
+        } catch (error) {
+            console.error("Error renaming content:", error);
+            toast.error(error.message);
+        }
+    };
+
+    const handleDeleteContent = async () => {
+        try {
+            if (!selectedItem?.contentId) return;
+            const response = await deleteContent(selectedItem.contentId).unwrap();
+            toast.success(response.message);
+
+            console.log("Content deleted successfully");
+            setTopicModalOpen(false);
+        } catch (error) {
+            console.error("Error deleting content:", error);
+        }
+    };
+
+
+
+    ////
+
+
+
     const dispatch = useDispatch();
 
     const openModal = () => setIsModalOpen(true);
@@ -41,7 +115,11 @@ function AddBlog() {
     };
 
     const openInstructionModal = () => setIsInstructionModalOpen(true);
-    const closeInstructionModal = () => setIsInstructionModalOpen(false);
+    const closeInstructionModal = () => {
+        setIsInstructionModalOpen(false)
+        setInstruction(null);
+    };
+
 
     const lastItemRef = useRef(null);
 
@@ -116,7 +194,10 @@ function AddBlog() {
     const handleInputChange = (value) => {
         setInputValue(value);
     };
-
+    const handleRemoveFile = () => {
+        setSelectedFile(null);
+        fileInputRef.current.value = "";
+    };
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         setSelectedFile(file);
@@ -133,7 +214,7 @@ function AddBlog() {
         document.getElementById('file-input').click();
     };
 
-    const handleSubmitValue = async (text) => {
+    const handleInputSubmit = async (text) => {
         if (!text.trim()) {
             toast.error("Please enter a message before submitting.");
             return;
@@ -150,7 +231,7 @@ function AddBlog() {
 
         try {
             await aiLearningSearch({
-                chat_message: { user_prompt: text, is_new: true, regenerate_id: null, instructions: "Write random responses." },
+                chat_message: { user_prompt: text, is_new: true, regenerate_id: null, instructions: instruction },
                 file: selectedFile || null,
                 folder_id: addNewFolderState?.folderId || null,
                 onMessage: (streamingText) => {
@@ -161,45 +242,54 @@ function AddBlog() {
                     });
                 },
             });
+            setSelectedFile(null);
         } catch (error) {
             console.error("Error sending request:", error);
             toast.error("Failed to fetch response.");
         } finally {
             setIsLoading(false);
+            
         }
     };
 
-    const containsHtml = /<\/?[a-z][\s\S]*>/i.test(chats.detailed_answer);
 
-
-    // const DynamicContent = ({ content }) => {
-    //     // Sanitize the incoming HTML content using DOMPurify
-    //     const sanitizedContent = DOMPurify.sanitize(content);
-
-    //     return (
-    //         <div
-    //             // Render the sanitized content inside the div
-    //             dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-    //         />
-    //     );
-    // };
     useEffect(() => {
         if (addNewFolderState?.add) {
             openModal();
         }
     }, [addNewFolderState?.add]);
 
-    const [topicModalOpen, setTopicModalOpen] = useState(false); // State for modal visibility
-    const [selectedItem, setSelectedItem] = useState(null); // State to store the selected item
+    // const [topicModalOpen, setTopicModalOpen] = useState(false); // State for modal visibility
+    // const [selectedItem, setSelectedItem] = useState(null); // State to store the selected item
+
+
+
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [topicModalOpen, setTopicModalOpen] = useState(false);
+    // const [newTitle, setNewTitle] = useState("");
 
     // Handle InfoCard click
     const handleCardClick = (item) => {
-        setSelectedItem(item); // Set the selected item
-        setTopicModalOpen(true); // Open the modal
+        console.log("Item clicked:", item);
+        setSelectedItem(item);
+        setNewTitle(item.title);
+        setTopicModalOpen(true);
     };
+    const clearTopicHandle = () => {
+        setChats([])
+    }
 
+    const [isEditing, setIsEditing] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
+    const userType = JSON.parse(localStorage.getItem("userType"));
+    console.log("userType", userType && userType.role === "admin");
 
+    useEffect(() => {
+        if (userType && userType.role === "admin") {
+            setIsAdmin(true);
+        }
+    }, [userType]);  // Ensure useEffect runs when userType changes
 
 
     return (
@@ -237,10 +327,10 @@ function AddBlog() {
                 </section>
             </Modal>
 
-            <Modal className="w-[800px]" isOpen={isInstructionModalOpen} onClose={closeInstructionModal} title={<h1 className="text-xl font-bold">Add instructions</h1>}>
+            <Modal className="w-[800px]" isOpen={isInstructionModalOpen} onClose={closeInstructionModal} title={<h1 className="text-xl font-bold">Add personalize topic</h1>}>
                 <textarea
                     className="w-full mt-4 h-40 p-4 border rounded"
-                    placeholder="Enter instructions here..."
+                    placeholder="Enter personalize topic here..."
                     value={instruction}
                     onChange={handleInstructionChange}
                 />
@@ -252,43 +342,185 @@ function AddBlog() {
                     />
                     <Button
                         className={"!bg-[#B6B6B6] text-[#1D1D1F99] "}
-                        text="Add Instructions"
+                        text="Add personalize topic"
                         onClick={addInstruction}
                     />
                 </section>
             </Modal>
+
             <Modal
-                className={'w-[500px] lg:w-[700px] max-h-[600px] custom-scroll  overflow-auto '}
+                className="w-[500px] lg:w-[700px] max-h-[600px] custom-scroll overflow-auto"
                 isOpen={topicModalOpen}
                 onClose={() => setTopicModalOpen(false)}
                 title={<h1 className="text-xl font-bold">Topic Details</h1>}
             >
+                {/* Editable Title Section */}
                 <section className="mt-4 overflow-auto">
-                    {selectedItem} {/* Pass content to DynamicContent */}
+                    {isEditing ? (
+                        <input
+                            type="text"
+                            value={newTitle}
+                            onChange={(e) => setNewTitle(e.target.value)}
+                            className="border border-gray-300 p-2 rounded w-full"
+                        />
+                    ) : (
+                        <h2 className="text-lg font-semibold">{selectedItem?.title}</h2>
+                    )}
+                </section>
+
+                {/* Description */}
+                <section className="mt-4 overflow-auto">
+                    {selectedItem?.description}
+                </section>
+
+                {/* Buttons */}
+                <section className="flex justify-between gap-2 mt-4">
+                    <Button className="!bg-[#8E8E8E] text-white" text="Close" onClick={() => setTopicModalOpen(false)} />
+
+                    <section className="flex gap-2">
+                        {isEditing ? (
+                            <>
+                                <Button className="!bg-green-500 text-white" text="Save" onClick={handleEditContent} />
+                                <Button className="!bg-red-500 text-white" text="Cancel" onClick={() => setIsEditing(false)} />
+                            </>
+                        ) : (
+                            <Button className="!bg-[#B6B6B6] text-[#1D1D1F99]" text="Edit" onClick={() => setIsEditing(true)} />
+                        )}
+                        <Button className="!bg-[#B6B6B6] text-[#1D1D1F99]" text="Delete" onClick={handleDeleteContent} />
+                    </section>
                 </section>
             </Modal>
+            {/* <Modal className="w-[800px]" isOpen={isInstructionModalOpen} onClose={closeInstructionModal} title={<h1 className="text-xl font-bold">Add personalize topic</h1>}>
+                <section className='h-[400px] custom-scroll overflow-auto'>
+                    <section className='flex gap-4 mb-4'>
+
+                        <section className='text-2xl font-medium'>
+                            Health Status
+                        </section>
+                        <section className='flex gap-4 '>
+                            <button className='hover:underline cursor-pointer '>Edit</button>
+                            <button className='hover:underline cursor-pointer '>Save</button>
+
+                        </section>
+
+                    </section>
+                    <section className='space-y-7'>
+
+                        <CustomInput
+                            className=''
+                            type="text"
+                            label="Current health concerns or symptoms (Multiple choice drop down)"
+                            placeholder="Fatigue, Insomnia, Weight Gain"
+                            name="instruction"
+                        // onChange={formDataChangeHandler}
+                        />
+                        <CustomInput
+                            className='mt-2'
+                            type="text"
+                            label="Current health concerns or symptoms (Multiple choice drop down)"
+                            placeholder="Fatigue, Insomnia, Weight Gain"
+                            name="instruction"
+                        // onChange={formDataChangeHandler}
+                        />
+                        <CustomInput
+                            className='mt-2'
+                            type="text"
+                            label="Current health concerns or symptoms (Multiple choice drop down)"
+                            placeholder="Fatigue, Insomnia, Weight Gain"
+                            name="instruction"
+                        // onChange={formDataChangeHandler}
+                        />
+                        <CustomInput
+                            className='mt-2'
+                            type="text"
+                            label="Current health concerns or symptoms (Multiple choice drop down)"
+                            placeholder="Fatigue, Insomnia, Weight Gain"
+                            name="instruction"
+                        // onChange={formDataChangeHandler}
+                        />
+                        <CustomInput
+                            className='mt-2'
+                            type="text"
+                            label="Current health concerns or symptoms (Multiple choice drop down)"
+                            placeholder="Fatigue, Insomnia, Weight Gain"
+                            name="instruction"
+                        // onChange={formDataChangeHandler}
+                        />
+                        <CustomInput
+                            className='mt-2'
+                            type="text"
+                            label="Current health concerns or symptoms (Multiple choice drop down)"
+                            placeholder="Fatigue, Insomnia, Weight Gain"
+                            name="instruction"
+                        // onChange={formDataChangeHandler}
+                        />
+                    </section>
+                    <section className='flex gap-4 mt-4 mb-4'>
+
+                        <section className='text-2xl font-medium'>
+                            Lifestyle & Habits
+                        </section>
+                        <section className='flex gap-4 '>
+                            <button className='hover:underline cursor-pointer '>Edit</button>
+                            <button className='hover:underline cursor-pointer '>Save</button>
+
+                        </section>
+
+                    </section>
+                    <section>
+                        <CustomInput
+                            className='mt-2'
+                            type="text"
+                            label="Current health concerns or symptoms (Multiple choice drop down)"
+                            placeholder="Fatigue, Insomnia, Weight Gain"
+                            name="instruction"
+                        // onChange={formDataChangeHandler}
+                        />
+                    </section>
+
+                </section>
+            </Modal> */}
+
             {/* Main Content */}
             <div className="w-full xs:px-4 md:px-36 flex-col h-full flex justify-center items-center">
-                <section className="w-full flex justify-between pl-4 mb-5 items-start">
+                <section className="w-full flex justify-between  p-2 mb-5 items-start">
                     <h1 className="text-3xl font-semibold">
                         {folder?.name || 'Select a folder'}
                     </h1>
+                    <section>
+                        <Button
+                            className="!bg-[#B6B6B6] text-[#1D1D1F99] "
+                            text="Clear Topics"
+                            onClick={clearTopicHandle}
+                        />
+
+                    </section>
                 </section>
 
-                <LibraryInput
+                {/* <LibraryInput
                     placeholder="Enter Prompt..."
                     onChangeValue={handleInputChange}
                     onSubmitValue={handleSubmitValue}
                     onFileUpload={handleFileUpload}
                     isLoading={isLoading}
 
+                /> */}
+                <LibraryInput
+                    placeholder="Enter text or upload a file"
+                    onChangeValue={handleInputChange}
+                    onSubmitValue={handleInputSubmit}
+                    onFileUpload={handleFileUpload}
+                    handleRemoveFile={handleRemoveFile}
+                    setSelectedFile={setSelectedFile}
+                    selectedFile={selectedFile}
+                    isLoading={isLoading} // Can be set to `true` when processing
                 />
                 {chats.length > 0 && (
 
-                    <section className='w-full max-h-[400px] mt-4 custom-scroll overflow-auto'>
+                    <section className='w-full  pb-2 mt-4 custom-scroll overflow-auto'>
 
                         {chats.map((chat, i) => (
-                            <QuestionAnswer key={i} chat={chat} lastItemRef={i === chats.length - 1 ? lastItemRef : null} />
+                            <QuestionAnswer key={i} setIsAdmin={setIsAdmin} isAdmin={isAdmin} chat={chat} lastItemRef={i === chats.length - 1 ? lastItemRef : null} />
                         ))}
                     </section>
                 )}
@@ -313,7 +545,7 @@ function AddBlog() {
                     </section>
                     <section className='w-full cursor-pointer' onClick={openInstructionModal}>
                         <FileCard
-                            title="Instructions"
+                            title="Personalize the topic"
                             description="Chats in this project can access file content"
                         />
                     </section>
@@ -332,6 +564,7 @@ function AddBlog() {
                         ) : (
                             <>
                                 {content?.map((item) => {
+                                    // console.log("ksfhwgigefee", item)
                                     return (
 
                                         <InfoCard
@@ -339,6 +572,7 @@ function AddBlog() {
                                             key={item.id}
                                             // Icon={item.Icon}
                                             title={item.title}
+                                            contentId={item.id}
                                             handleCardClick={handleCardClick}  // Add onClick to each InfoCard
                                             description={<DynamicContent content={item.content} />}
                                         />
