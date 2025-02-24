@@ -6,8 +6,9 @@ import ContentItem from "../../../../components/ContentItem";
 import FolderItem from "../../../../components/FolderItem";
 import { useDeleteFolderByIdMutation, useEditFolderByIdMutation } from "../../../../redux/apis/apiSlice";
 import { setAddFolderData, setContentId } from "../../../../redux/slice/sidebarSlice";
+import SaveContentItems from "../../../../components/SaveContentItems";
 
-const Folder = ({
+const Content = ({
     folder,
     openFolders,
     toggleFolder,
@@ -24,7 +25,7 @@ const Folder = ({
     const [newName, setNewName] = useState(folder.name);
     const inputRef = useRef(null);
 
-
+console.log("level",level)
     const addArticlesHandler = (id) => {
         dispatch(setAddFolderData({ folderId: id, add: true })); // Assuming you want to set the selected folder ID here
     };
@@ -126,7 +127,7 @@ const Folder = ({
                         <span className="truncate w-[100px]">{folder.name}</span>
                     )}
                 </div>
-                <FolderItem content={folder} onDelete={handleDelete} onAdd={addArticlesHandler} setIsEditing={setIsEditing} />
+                {/* <FolderItem content={folder} onDelete={handleDelete} onAdd={addArticlesHandler} setIsEditing={setIsEditing} /> */}
 
             </div>
 
@@ -138,7 +139,7 @@ const Folder = ({
                         <>
                             {/* Render Subfolders */}
                             {folder.subfolders?.map((subfolder) => (
-                                <Folder
+                                <Content
                                     key={subfolder.id}
                                     folder={subfolder}
                                     openFolders={openFolders}
@@ -157,7 +158,7 @@ const Folder = ({
                             {/* Render Files Inside Folder */}
                             {folder.content?.map((content, index) => (
                                 <div key={index} className="ml-6  w-40 cursor-pointer hover:bg-gray-200 text-gray-700 text-sm">
-                                    <ContentItem content={content} folderId={folder.id}/>
+                                    <SaveContentItems content={content} folderId={folder.id}/>
                                 </div>
                             ))}
                         </>
@@ -168,4 +169,4 @@ const Folder = ({
     );
 };
 
-export default Folder;
+export default Content;

@@ -3,19 +3,20 @@ import toast from 'react-hot-toast';
 import { CgFileAdd } from 'react-icons/cg';
 import { PiChatsCircle } from 'react-icons/pi';
 import { useDispatch, useSelector } from 'react-redux';
-import Modal from '../../../components/modals/Modal';
-import Button from '../../../components/small/Button';
-import { useAddNewFolderMutation, useAiLearningSearchMutation, useDeleteContentByIdMutation, useDeleteFolderByIdMutation, useEditContentByIdMutation, useEditFolderByIdMutation, useGetFolderStructureQuery } from '../../../redux/apis/apiSlice';
-// import { setAddFolderData } from '../../../redux/slice/sidebarSlice';
-import { setAddFolderData } from '../../../redux/slice/sidebarSlice';
-import QuestionAnswer from '../../screens/chat/components/QuestionAnswer';
-import LibraryInput from '../../user/library/components/LibraryInput';
-import DynamicContent from './components/DynamicContent';
-import FileCard from './components/FileCard';
-import InfoCard from './components/InfoCard';
-// import Input from "../small/Input";
+import Modal from '../../../../components/modals/Modal';
+import Button from '../../../../components/small/Button';
+import CustomInput from '../../../../components/small/CustomInput';
+import { useAddNewFolderMutation, useAiLearningSearchMutation, useDeleteContentByIdMutation, useDeleteFolderByIdMutation, useEditContentByIdMutation, useEditFolderByIdMutation, useGetFolderStructureQuery } from '../../../../redux/apis/apiSlice';
+import { setAddFolderData } from '../../../../redux/slice/sidebarSlice';
+import DynamicContent from '../../../admin/addBlog/components/DynamicContent';
+import FileCard from '../../../admin/addBlog/components/FileCard';
+import InfoCard from '../../../admin/addBlog/components/InfoCard';
+import QuestionAnswer from '../../../screens/chat/components/QuestionAnswer';
+import LibraryInput from '../../../user/library/components/LibraryInput';
 
-function AddBlog() {
+function CoachesDashboard() {
+
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isInstructionModalOpen, setIsInstructionModalOpen] = useState(false);
     const [addFolder, setAddNewFolder] = useState('');
@@ -32,15 +33,24 @@ function AddBlog() {
     const [addNewFolder, { isLoading: addNewFolderLoading }] = useAddNewFolderMutation();
     const [aiLearningSearch] = useAiLearningSearchMutation();
     const { data: allFolders } = useGetFolderStructureQuery();
+
+
+
+    ////////////
+
     const [folderId, setFolderId] = useState("");
     const [contentId, setContentId] = useState("");
     const [newName, setNewName] = useState("");
     const [newTitle, setNewTitle] = useState("");
     const [title, setTitle] = useState("");
+    // const [content, setContent] = useState("");
+
+
     const [editFolder] = useEditFolderByIdMutation();
     const [deleteFolder] = useDeleteFolderByIdMutation();
     const [editContent] = useEditContentByIdMutation();
     const [deleteContent] = useDeleteContentByIdMutation();
+
     const handleEditFolder = async () => {
         try {
             await editFolder({ folderId, newName }).unwrap();
@@ -66,7 +76,6 @@ function AddBlog() {
             if (!selectedItem?.contentId) return;
             const response = await editContent({ contentId: selectedItem.contentId, newTitle }).unwrap();
             toast.success(response.message);
-            console.log("Content renamed successfully", response);
             setIsEditing(false);
         } catch (error) {
             console.error("Error renaming content:", error);
@@ -80,7 +89,6 @@ function AddBlog() {
             const response = await deleteContent(selectedItem.contentId).unwrap();
             toast.success(response.message);
 
-            console.log("Content deleted successfully");
             setTopicModalOpen(false);
         } catch (error) {
             console.error("Error deleting content:", error);
@@ -132,7 +140,6 @@ function AddBlog() {
         return null; // Return null if not found
     }
 
-    // Ensure that `addNewFolderState.folderId` and `allFolders` are available before calling the function
     const folder = allFolders && addNewFolderState?.folderId
         ? findFolderById(allFolders.folders, addNewFolderState.folderId)
         : null;
@@ -189,6 +196,7 @@ function AddBlog() {
         toast.success(`File Uploaded: ${file.name}`);
     };
     const handleFileUpload = (file) => {
+        // const file = event.target.files[0];
         setSelectedFile(file);
         toast.success(`File Uploaded: ${file.name}`);
     };
@@ -230,7 +238,7 @@ function AddBlog() {
             toast.error("Failed to fetch response.");
         } finally {
             setIsLoading(false);
-            
+
         }
     };
 
@@ -241,8 +249,16 @@ function AddBlog() {
         }
     }, [addNewFolderState?.add]);
 
+    // const [topicModalOpen, setTopicModalOpen] = useState(false); // State for modal visibility
+    // const [selectedItem, setSelectedItem] = useState(null); // State to store the selected item
+
+
+
     const [selectedItem, setSelectedItem] = useState(null);
     const [topicModalOpen, setTopicModalOpen] = useState(false);
+    // const [newTitle, setNewTitle] = useState("");
+
+    // Handle InfoCard click
     const handleCardClick = (item) => {
         setSelectedItem(item);
         setNewTitle(item.title);
@@ -262,6 +278,10 @@ function AddBlog() {
             setIsAdmin(true);
         }
     }, [userType]);  // Ensure useEffect runs when userType changes
+
+
+
+
 
 
     return (
@@ -299,7 +319,7 @@ function AddBlog() {
                 </section>
             </Modal>
 
-            <Modal className="w-[800px]" isOpen={isInstructionModalOpen} onClose={closeInstructionModal} title={<h1 className="text-xl font-bold">Add personalize topic</h1>}>
+            {/* <Modal className="w-[800px]" isOpen={isInstructionModalOpen} onClose={closeInstructionModal} title={<h1 className="text-xl font-bold">Add personalize topic</h1>}>
                 <textarea
                     className="w-full mt-4 h-40 p-4 border rounded"
                     placeholder="Enter personalize topic here..."
@@ -318,7 +338,7 @@ function AddBlog() {
                         onClick={addInstruction}
                     />
                 </section>
-            </Modal>
+            </Modal> */}
 
             <Modal
                 className="w-[500px] lg:w-[700px] max-h-[600px] custom-scroll overflow-auto"
@@ -362,7 +382,7 @@ function AddBlog() {
                     </section>
                 </section>
             </Modal>
-            {/* <Modal className="w-[800px]" isOpen={isInstructionModalOpen} onClose={closeInstructionModal} title={<h1 className="text-xl font-bold">Add personalize topic</h1>}>
+            <Modal className="w-[800px]" isOpen={isInstructionModalOpen} onClose={closeInstructionModal} title={<h1 className="text-xl font-bold">Add personalize topic</h1>}>
                 <section className='h-[400px] custom-scroll overflow-auto'>
                     <section className='flex gap-4 mb-4'>
 
@@ -451,7 +471,7 @@ function AddBlog() {
                     </section>
 
                 </section>
-            </Modal> */}
+            </Modal>
 
             {/* Main Content */}
             <div className="w-full xs:px-4 md:px-36 flex-col h-full flex justify-center items-center">
@@ -468,6 +488,15 @@ function AddBlog() {
 
                     </section>
                 </section>
+
+                {/* <LibraryInput
+                    placeholder="Enter Prompt..."
+                    onChangeValue={handleInputChange}
+                    onSubmitValue={handleSubmitValue}
+                    onFileUpload={handleFileUpload}
+                    isLoading={isLoading}
+
+                /> */}
                 <LibraryInput
                     placeholder="Enter text or upload a file"
                     onChangeValue={handleInputChange}
@@ -546,7 +575,7 @@ function AddBlog() {
                 </section>
             </div>
         </div>
-    );
+    )
 }
 
-export default AddBlog;
+export default CoachesDashboard

@@ -8,7 +8,7 @@ import { setContentId } from "../redux/slice/sidebarSlice";
 import Modal from "./modals/Modal";
 import Button from "./small/Button";
 
-const ContentItem = ({ content, folderId, onAdd, onDelete }) => {
+const SaveContentItems = ({ content, folderId, onAdd, onDelete }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [selectedFolder, setSelectedFolder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -152,7 +152,6 @@ const ContentItem = ({ content, folderId, onAdd, onDelete }) => {
                     </section>
                 )}
 
-                {/* Dropdown Menu */}
                 <button ref={buttonRef} onClick={() => setIsMenuOpen((prev) => !prev)} className="p-2 text-gray-600 hover:text-gray-800">
                     <FaEllipsisV />
                 </button>
@@ -160,7 +159,6 @@ const ContentItem = ({ content, folderId, onAdd, onDelete }) => {
                     <div ref={menuRef} className="absolute right-2 top-8 bg-white shadow-lg border rounded-md w-32 z-10">
                         <button onClick={() => { setIsModalOpen(true); setIsMenuOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-200">Move</button>
                         <button onClick={() => { setIsEditing(true); setIsMenuOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-200">Rename</button>
-                        {/* <button onClick={() => { onAdd(content); setIsMenuOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-gray-200">Add</button> */}
                         <button onClick={() => { handleDeleteContent(), setIsMenuOpen(false); }} className="block w-full text-left px-4 py-2 hover:bg-red-200 text-red-600">Delete</button>
                     </div>
                 )}
@@ -169,4 +167,4 @@ const ContentItem = ({ content, folderId, onAdd, onDelete }) => {
     );
 };
 
-export default ContentItem;
+export default SaveContentItems;

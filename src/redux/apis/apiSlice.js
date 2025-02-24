@@ -43,9 +43,9 @@ export const apiSlice = createApi({
             // ✅ Create FormData instance
             const formData = new FormData();
             formData.append("chat_message", JSON.stringify(payload.chat_message));
-            if (payload.folder_id) {
-              formData.append("folder_id", payload.folder_id);
-            }
+            // if (payload.folder_id) {
+            //   formData.append("folder_id", payload.folder_id);
+            // }
             if (payload.file) {
               const fileType = payload.file.type;
               if (fileType === "application/pdf") {
@@ -219,6 +219,16 @@ export const apiSlice = createApi({
       query: () => "/folders/structure",
       providesTags: [{ type: "Folders", id: "LIST" }],
     }),
+    
+    getContentById: builder.mutation({
+      query: (contentId) => ({
+        url: "/content/retrieve",
+        method: "POST",
+        body: { content_id: contentId },
+      }),
+      providesTags: [{ type: "Folders", id: "LIST" }],
+    }),
+
     addNewFolder: builder.mutation({
       query: ({ name, description, parent_folder_id }) => ({
         url: '/folders/create', // Change to the correct API endpoint
@@ -256,11 +266,12 @@ export const apiSlice = createApi({
     }),
 
     editContentById: builder.mutation({
-      query: ({ contentId, newTitle }) => ({
+      query: ({ content_id, new_title, new_content, new_query }) => ({
         url: `folders/rename-content`,
         method: 'PUT',
-        body: { content_id: contentId, new_title: newTitle },
+        body: {  content_id, new_title,new_content,new_query },
       }),
+      
       invalidatesTags: [{ type: "Folders", id: "LIST" }],
     }),
     moveContent: builder.mutation({
@@ -280,6 +291,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: [{ type: "Folders", id: "LIST" }],
     })
+
   }),
 });
 
@@ -305,4 +317,5 @@ export const {
   useEditFolderByIdMutation,
   useEditContentByIdMutation,
   useMoveContentMutation,
+  useGetContentByIdMutation
 } = apiSlice;
