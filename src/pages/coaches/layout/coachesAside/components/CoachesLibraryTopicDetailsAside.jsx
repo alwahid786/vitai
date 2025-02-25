@@ -99,7 +99,7 @@ function CoachesLibraryTopicDetailsAside() {
                         )}
                     </div>
                 </div> */}
-                <div className="p-4 h-full overflow-auto w-full">
+                <div className="p-4 h-full overflow-auto w-full custom-scroll">
               <div className="flex gap-2 mb-8 items-center ">
                 <TfiWrite />
                 <span className="text-[#393838]">Feedback</span>
