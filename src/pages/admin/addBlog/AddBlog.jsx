@@ -116,27 +116,47 @@ function AddBlog() {
 
 
     function findFolderById(folders, id) {
-        // Check if folders is valid and iterable
-        if (!Array.isArray(folders)) return null;
+        // Check if folders is a valid array
+        if (!Array.isArray(folders)) {
+            console.warn("Invalid folders array:", folders);
+            return null;
+        }
+        // Check if id is valid (non-null, non-undefined)
+        if (!id) {
+            console.warn("Invalid folder id:", id);
+            return null;
+        }
 
         for (const folder of folders) {
-            if (folder.id === id) {
-                return folder; // Return the folder if the ID matches
+            //   console.log("Checking folder:", folder?.id);
+            if (folder?.id === id) {
+                return folder; // Folder found
             }
-            // Check if subfolders is valid before recursion
-            if (Array.isArray(folder.subfolders) && folder.subfolders.length > 0) {
+            if (Array.isArray(folder?.subfolders) && folder.subfolders.length > 0) {
                 const result = findFolderById(folder.subfolders, id);
-                if (result) return result; // Return if found in subfolders
+                if (result) return result;
             }
         }
-        return null; // Return null if not found
+        return null; // Folder not found
     }
 
-    // Ensure that `addNewFolderState.folderId` and `allFolders` are available before calling the function
-    const folder = allFolders && addNewFolderState?.folderId
-        ? findFolderById(allFolders.folders, addNewFolderState.folderId)
-        : null;
-    const content = folder?.content;
+    // Ensure allFolders and addNewFolderState exist and have the expected properties
+    const folder =
+        allFolders?.posted_topics && addNewFolderState?.folderId
+            ? findFolderById(allFolders.posted_topics, addNewFolderState.folderId)
+            : null;
+
+    const content = folder?.content ?? []; // Use an empty array if folder.content is undefined
+
+
+    useEffect(() => {
+        if (allFolders?.posted_topics && addNewFolderState?.folderId) {
+            const folderFromPosted = findFolderById(allFolders.posted_topics, addNewFolderState.folderId);
+            console.log("Found folder in posted_topics:", folderFromPosted);
+        } else {
+            console.warn("Missing allFolders.posted_topics or addNewFolderState.folderId");
+        }
+    }, [allFolders, addNewFolderState]);
     const addInstruction = () => {
         closeInstructionModal();
     };
@@ -230,7 +250,7 @@ function AddBlog() {
             toast.error("Failed to fetch response.");
         } finally {
             setIsLoading(false);
-            
+
         }
     };
 
@@ -454,7 +474,7 @@ function AddBlog() {
             </Modal> */}
 
             {/* Main Content */}
-            <div className="w-full xs:px-4 md:px-36 flex-col h-full flex justify-center items-center">
+            <div className="w-full xs:px-4 md:px-36 flex-col h-full pt-10 flex justify-center items-center">
                 <section className="w-full flex justify-between  p-2 mb-5 items-start">
                     <h1 className="text-3xl font-semibold">
                         {folder?.name || 'Select a folder'}
@@ -508,9 +528,9 @@ function AddBlog() {
                     </section>
                     <section className='w-full cursor-pointer' onClick={openInstructionModal}>
                         <FileCard
-                            title="Personalize the topic"
-                            description="Chats in this project can access file content"
-                        />
+                            title="Instructions"
+                            description={isAdmin && "Insert your instructions to attach with prompt" || !isAdmin && "Personalize your content using client data" }
+                            />
                     </section>
                 </div>
 
