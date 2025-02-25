@@ -137,6 +137,23 @@ function CoachesLibraryTopicDetails() {
   const [isAdmin, setIsAdmin] = useState(false);
   const userType = JSON.parse(localStorage.getItem("userType"));
 
+
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsEditing(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   useEffect(() => {
     if (userType && userType.role === "admin") {
       setIsAdmin(true);
@@ -321,7 +338,7 @@ function CoachesLibraryTopicDetails() {
               selectedFolder === item.id
                 ? "bg-primary text-white"
                 : "bg-gray-100"
-            }`}
+              }`}
           >
             <FaRegFolder /> {item.name}
           </div>
@@ -341,11 +358,11 @@ function CoachesLibraryTopicDetails() {
         </div>
       </Modal>
       {/* Main UI */}
-      <section className=" h-[calc(100vh-130px)] flex flex-col items-center">
+      <section className=" h-[calc(100vh-90px)] flex flex-col items-center">
         <div className="h-[90%] custom-scroll mb-2 overflow-auto">
           <div className="w-full flex flex-col justify-center overflow-auto">
             {/* Content Display Section */}
-            <section className="flex justify-center overflow-auto h gap-4">
+            <section className="flex justify-center  h gap-4">
               <div className="custom-scroll overflow-auto w-[80%]  flex flex-col border mt-5  shadow-[#8484850A] rounded-lg p-4 text-black">
                 <section className="flex flex-col  mt-[24px]">
                   <section className="text-3xl font-bold">Title</section>
@@ -381,7 +398,7 @@ function CoachesLibraryTopicDetails() {
                     />
                   </section>
                   {isEditing && (
-                    <section className="absolute w-[150px] top-5 left-0 bg-white shadow-lg rounded-lg">
+                    <section  ref={dropdownRef} className="absolute w-[150px] top-5 left-[-10px] bg-white shadow-lg rounded-lg">
                       <section
                         onClick={() => {
                           openEditModal("title"), setIsEditing(false);

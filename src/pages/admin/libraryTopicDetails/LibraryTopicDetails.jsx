@@ -48,6 +48,24 @@ const LibraryTopicDetails = () => {
     content: "",
   });
 
+
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsEditing(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+
   const openEditModal = (field) => {
     setEditingField(field);
     setIsEditModal(true);
@@ -334,13 +352,9 @@ const LibraryTopicDetails = () => {
         </div>
       </Modal>
       {/* Main UI */}
-      <section className=" h-[calc(100vh-130px)] flex flex-col items-center">
-        {isError && (
-          <div className="text-red-500 flex items-center h-[90%]">
-            {error?.data?.message || "An error occurred"}
-          </div>
-        )}
-        {!isError && (
+      <section className=' h-[calc(100vh-90px)] flex flex-col items-center'>
+        {isError && <div className="text-red-500 flex items-center h-[90%]">{error?.data?.message || "An error occurred"}</div>}
+        {!isError &&
           <div className="h-[90%] custom-scroll mb-2 overflow-auto">
             <div className="w-full flex flex-col justify-center overflow-auto">
               {/* Content Display Section */}
@@ -380,7 +394,7 @@ const LibraryTopicDetails = () => {
                       />
                     </section>
                     {isEditing && (
-                      <section className="absolute w-[150px] top-5 left-0 bg-white shadow-lg rounded-lg">
+                      <section ref={dropdownRef} className='absolute w-[150px] top-5 left-[-10px] bg-white shadow-lg rounded-lg'>
                         <section
                           onClick={() => {
                             openEditModal("title"), setIsEditing(false);
