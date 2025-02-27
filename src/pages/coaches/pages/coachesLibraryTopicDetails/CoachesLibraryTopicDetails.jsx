@@ -23,6 +23,8 @@ import DynamicContent from "../../../admin/addBlog/components/DynamicContent";
 import QuestionAnswer from "../../../screens/chat/components/QuestionAnswer";
 import LibraryInput from "../../../user/library/components/LibraryInput";
 import { apiErrorHandler } from "../../../../api/apiErrorHandler";
+import FolderSelection from "../../../../components/FolderSelection";
+import HtmlContent from "../../../../components/htmlToText";
 // import DynamicContent from '../addBlog/components/DynamicContent';
 // import Modal from '../../../components/modals/Modal';
 // import Button from '../../../components/small/Button';
@@ -329,7 +331,7 @@ function CoachesLibraryTopicDetails() {
         onClose={closeModal}
         title={<h1 className="text-xl font-bold">Post Content</h1>}
       >
-        <p className="mb-3">Please select a folder</p>
+        {/* <p className="mb-3">Please select a folder</p>
         {allFolderss?.map((item) => (
           <div
             key={item.id}
@@ -355,7 +357,15 @@ function CoachesLibraryTopicDetails() {
             disabled={!selectedFolder || isMoving}
             onClick={handleMoveContent}
           />
-        </div>
+        </div> */}
+        <FolderSelection
+          selectedFolder={selectedFolder}
+          setSelectedFolder={setSelectedFolder}
+          folders={allFolderss}
+          closeModal={closeModal}
+          handleMoveContent={handleMoveContent}
+          isMoving={isMoving}
+        />
       </Modal>
       {/* Main UI */}
       <section className=" h-[calc(100vh-90px)] flex flex-col items-center">
@@ -363,20 +373,22 @@ function CoachesLibraryTopicDetails() {
           <div className="w-full flex flex-col justify-center overflow-auto">
             {/* Content Display Section */}
             <section className="flex justify-center  h gap-4">
-              <div className="custom-scroll overflow-auto w-[80%]  flex flex-col border mt-5  shadow-[#8484850A] rounded-lg p-4 text-black">
-                <section className="flex flex-col  mt-[24px]">
-                  <section className="text-3xl font-bold">Title</section>
-                  <h1 className="text-3xl mb-6 text-[#1D1D1F99] font-bold">
-                    {editData.title || "No title"}
-                  </h1>
-                  <section className="text-3xl font-bold">Content</section>
-                  <section className="text-[#1D1D1F99] text-xl font-medium">
-                    <DynamicContent
-                      content={editData.content || "No content"}
-                    />
+              
+              <div className="custom-scroll overflow-auto w-[80%]  flex  flex-col mt-5 shadow-[#8484850A] rounded-lg p-4 text-black">
+                  <section className="flex flex-col   mt-[24px]">
+                    <div className="border p-4 rounded-2xl w-[70%] max-w-max ml-auto bg-[#f5f5f5]">
+                      <h1 className="text-base md:text-lg text-[#1D1D1F99] font-bold">
+                        {editData.title || "No title"}
+                      </h1>
+                    </div>
+                    <div className="border p-4 rounded-2xl w-[70%] max-w-max mr-auto mt-5">
+                      <section className="text-[#1D1D1F99] text-xl font-medium">
+                       
+                        <HtmlContent contents={editData.content} />
+                      </section>
+                    </div>
                   </section>
-                </section>
-              </div>
+                </div>
               <section className="flex flex-col gap-4 mt-5 text-primary">
                 <section className="flex  shadow-lg  rounded-3xl w-12 h-9 items-center justify-center">
                   <AiOutlineMenuFold
@@ -387,7 +399,7 @@ function CoachesLibraryTopicDetails() {
                 <section className="flex  shadow-lg  rounded-3xl w-12 h-9 items-center justify-center">
                   <IoIosSave
                     className="hover:text-black  cursor-pointer text-lg"
-                    //  onClick={handleEditContent}
+                  //  onClick={handleEditContent}
                   />
                 </section>
                 <section className="relative">
@@ -398,7 +410,7 @@ function CoachesLibraryTopicDetails() {
                     />
                   </section>
                   {isEditing && (
-                    <section  ref={dropdownRef} className="absolute w-[150px] top-5 left-[-10px] bg-white shadow-lg rounded-lg">
+                    <section ref={dropdownRef} className="absolute w-[150px] top-5 left-[-10px] bg-white shadow-lg rounded-lg">
                       <section
                         onClick={() => {
                           openEditModal("title"), setIsEditing(false);

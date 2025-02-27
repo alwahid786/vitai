@@ -22,6 +22,8 @@ import { apiErrorHandler } from "../../../api/apiErrorHandler";
 import LibraryInput from "../../user/library/components/LibraryInput";
 import QuestionAnswer from "../../screens/chat/components/QuestionAnswer";
 import { FaEllipsisV, FaRegFolder } from "react-icons/fa";
+import FolderSelection from "../../../components/FolderSelection";
+import HtmlContent from "../../../components/htmlToText";
 
 const LibraryTopicDetails = () => {
   const contentId = useSelector((state) => state.sidebar.contentId);
@@ -266,6 +268,8 @@ const LibraryTopicDetails = () => {
   }
 
   const allFolderss = getAllFolders(allFolders?.posted_topics);
+  // const [isMoving, setIsMoving] = useState(false);
+  // const [selectedFolder, setSelectedFolder] = useState(null);
 
   return (
     <>
@@ -323,54 +327,36 @@ const LibraryTopicDetails = () => {
         onClose={closeModal}
         title={<h1 className="text-xl font-bold">Post Content</h1>}
       >
-        <p className="mb-3">Please select a folder</p>
-        {allFolderss?.map((item) => (
-          <div
-            key={item.id}
-            onClick={() => setSelectedFolder(item.id)}
-            className={`flex cursor-pointer hover:bg-gray-200 mt-3 items-center gap-2 p-2 rounded-lg ${
-              selectedFolder === item.id
-                ? "bg-primary text-white"
-                : "bg-gray-100"
-            }`}
-          >
-            <FaRegFolder /> {item.name}
-          </div>
-        ))}
-        <div className="flex justify-end gap-2 mt-4">
-          <Button
-            className="bg-gray-400 text-white"
-            text="Close"
-            onClick={closeModal}
-          />
-          <Button
-            className="bg-blue-500 text-white"
-            text="Move"
-            disabled={!selectedFolder || isMoving}
-            onClick={handleMoveContent}
-          />
-        </div>
+        <FolderSelection
+          selectedFolder={selectedFolder}
+          setSelectedFolder={setSelectedFolder}
+          folders={allFolders?.posted_topics}
+          closeModal={closeModal}
+          handleMoveContent={handleMoveContent}
+          isMoving={isMoving}
+        />
       </Modal>
       {/* Main UI */}
-      <section className=' h-[calc(100vh-90px)] flex flex-col items-center'>
+      <section className=' h-[calc(100vh-90px)] w-full flex flex-col items-center'>
         {isError && <div className="text-red-500 flex items-center h-[90%]">{error?.data?.message || "An error occurred"}</div>}
         {!isError &&
-          <div className="h-[90%] custom-scroll mb-2 overflow-auto">
+          <div className="h-[90%] w-full custom-scroll mb-2 overflow-auto">
             <div className="w-full flex flex-col justify-center overflow-auto">
               {/* Content Display Section */}
-              <section className="flex justify-center overflow-auto h gap-4">
-                <div className="custom-scroll overflow-auto w-[80%]  flex flex-col border mt-5  shadow-[#8484850A] rounded-lg p-4 text-black">
-                  <section className="flex flex-col  mt-[24px]">
-                    <section className="text-3xl font-bold">Title</section>
-                    <h1 className="text-3xl mb-6 text-[#1D1D1F99] font-bold">
-                      {editData.title || "No title"}
-                    </h1>
-                    <section className="text-3xl font-bold">Content</section>
-                    <section className="text-[#1D1D1F99] text-xl font-medium">
-                      <DynamicContent
-                        content={editData.content || "No content"}
-                      />
-                    </section>
+              <section className="flex justify-center w-full  overflow-auto h gap-4">
+                <div className="custom-scroll overflow-auto w-[80%]  flex  flex-col mt-5 shadow-[#8484850A] rounded-lg p-4 text-black">
+                  <section className="flex flex-col   mt-[24px]">
+                    <div className="border p-4 rounded-2xl w-[70%] max-w-max ml-auto bg-[#f5f5f5]">
+                      <h1 className="text-base md:text-lg text-[#1D1D1F99] font-bold">
+                        {editData.title || "No title"}
+                      </h1>
+                    </div>
+                    <div className="border p-4 rounded-2xl w-[70%] max-w-max mr-auto mt-5">
+                      <section className="text-[#1D1D1F99] text-xl font-medium">
+                       
+                        <HtmlContent contents={editData.content} />
+                      </section>
+                    </div>
                   </section>
                 </div>
                 <section className="flex flex-col gap-4 mt-5 text-primary">
@@ -383,7 +369,7 @@ const LibraryTopicDetails = () => {
                   <section className="flex  shadow-lg  rounded-3xl w-12 h-9 items-center justify-center">
                     <IoIosSave
                       className="hover:text-black  cursor-pointer text-lg"
-                      //  onClick={handleEditContent}
+                    //  onClick={handleEditContent}
                     />
                   </section>
                   <section className="relative">
@@ -445,7 +431,7 @@ const LibraryTopicDetails = () => {
             handleRemoveFile={handleRemoveFile}
             setSelectedFile={setSelectedFile}
             selectedFile={selectedFile}
-            isLoading={isLoading} 
+            isLoading={isLoading}
           />
         </section>
       </section>
