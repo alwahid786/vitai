@@ -12,6 +12,7 @@ import { useGetFolderStructureQuery } from '../../../../../redux/apis/apiSlice';
 import { setAddFolderData } from '../../../../../redux/slice/sidebarSlice';
 import FolderTree from '../../../addBlog/components/FolderTree';
 import ContentTree from '../../../addBlog/components/ContentTree';
+import { useNavigate } from 'react-router-dom';
 
 
 // Reusable Section Component
@@ -33,7 +34,7 @@ const SidebarSection = ({ Icon, text, onClick, extraClasses = "" }) => {
 
 function LibraryTopicDetailsSideBAr() {
   const [isAsideOpen, setIsAsideOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(true);
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [showMore, setShowMore] = useState({});
   const { data: allFolders, isLoading, isError, error, isSuccess, refetch } = useGetFolderStructureQuery();
@@ -42,7 +43,11 @@ function LibraryTopicDetailsSideBAr() {
   }, [isError, error, isSuccess]);
   useAutoRefetchOnReconnect(refetch);
 
+  const navigate = useNavigate();
 
+  const DashBoardHandle = () => {
+    navigate('/admin')
+  }
 
   const asideToggleHandler = () => {
     setIsAsideOpen(!isAsideOpen);
@@ -115,6 +120,9 @@ function LibraryTopicDetailsSideBAr() {
                 <span className="text-[#393838]">Feedback</span>
               </div>
               <div className="project-container">
+                <section onClick={DashBoardHandle} className='text-[#393838] text-lg font-semibold w-full flex items-center justify-center bg-primary hover:bg-gray-500 cursor-pointer mb-2 p-2 rounded-lg'>
+                  New Chat
+                </section>
 
                 <div className="project-name flex mb-4 justify-between items-center rounded-lg cursor-pointer p-2 hover:bg-[#E0E0E0] transition-all duration-300" onClick={handleDropdownToggle}>
                   <span className="text-[#393838] text-sm font-semibold">Topic</span>
@@ -124,19 +132,16 @@ function LibraryTopicDetailsSideBAr() {
                 </div>
                 {showDropdown && (
                   <>
-                    <div className="dropdown-content  custom-scroll   overflow-auto">
-                      <FolderTree allFolders={allFolders} addArticlesHandler={addArticlesHandler} />
-
-
-
-                    </div>
                     <div className="mt-4">
                       <text className="text-sm font-semibold text-[#444444]">
                         SAVED TOPICS
                       </text>
                       <ContentTree allFolders={allFolders} addArticlesHandler={addArticlesHandler} />
-
                     </div>
+                    <div className="dropdown-content  custom-scroll   overflow-auto">
+                      <FolderTree allFolders={allFolders} addArticlesHandler={addArticlesHandler} />
+                    </div>
+
                   </>
                 )}
               </div>

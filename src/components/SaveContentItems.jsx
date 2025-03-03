@@ -12,6 +12,7 @@ import {
 import { setContentId } from "../redux/slice/sidebarSlice";
 import Modal from "./modals/Modal";
 import Button from "./small/Button";
+import CategoryFolderSelection from "./FolderSelection";
 
 const SaveContentItems = ({ content, folderId, onAdd, onDelete }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -120,17 +121,17 @@ const SaveContentItems = ({ content, folderId, onAdd, onDelete }) => {
 
     if (currentPath === "/admin/library-topic-details") {
       // Update the query parameter instead of navigating
-      setSearchParams({ id: item.id, folderId: folderId });
+      setSearchParams({ id: item.id ,savetopic: ""});
     } else if (currentPath === "/coaches/coaches-library-topic-details") {
       // Update the query parameter instead of navigating
-      setSearchParams({ id: item.id, folderId: folderId });
+      setSearchParams({ id: item.id,savetopic: "" });
     } else if (currentPath === "/admin") {
       navigate(
-        `/admin/library-topic-details?id=${item.id}&folderId=${folderId}`
+        `/admin/library-topic-details?id=${item.id}&savetopic`
       );
     } else if (currentPath === "/coaches") {
       navigate(
-        `/coaches/coaches-library-topic-details?id=${item.id}&folderId=${folderId}`
+        `/coaches/coaches-library-topic-details?id=${item.id}&savetopic`
       );
     }
   };
@@ -143,7 +144,7 @@ const SaveContentItems = ({ content, folderId, onAdd, onDelete }) => {
         onClose={closeModal}
         title={<h1 className="text-xl font-bold">Move Content</h1>}
       >
-        <p className="mb-3">Please select a folder:</p>
+        {/* <p className="mb-3">Please select a folder:</p>
         {folderList.map((item) => (
           <div
             key={item.id}
@@ -169,7 +170,15 @@ const SaveContentItems = ({ content, folderId, onAdd, onDelete }) => {
             disabled={!selectedFolder || isMoving}
             onClick={handleMoveContent}
           />
-        </div>
+        </div> */}
+        <CategoryFolderSelection
+          selectedFolder={selectedFolder}
+          setSelectedFolder={setSelectedFolder}
+          folders={allFolders}
+          closeModal={closeModal}
+          handleMoveContent={handleMoveContent}
+          isMoving={isMoving}
+        />
       </Modal>
 
       {/* Content Item */}

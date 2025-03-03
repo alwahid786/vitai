@@ -45,6 +45,16 @@ const LibraryTopicDetails = () => {
   const navigate = useNavigate();
   // Get values from query parameters
   const id = searchParams.get("id");
+
+  const isSaveTopicPresent = searchParams.has("savetopic");
+
+  console.log("ID:", id);
+  console.log("Save Topic Exists:", isSaveTopicPresent);
+
+
+
+
+
   const [editData, setEditData] = useState({
     title: "",
     content: "",
@@ -353,12 +363,14 @@ const LibraryTopicDetails = () => {
                     </div>
                     <div className="border p-4 rounded-2xl w-[70%] max-w-max mr-auto mt-5">
                       <section className="text-[#1D1D1F99] text-xl font-medium">
-                       
+
                         <HtmlContent contents={editData.content} />
                       </section>
                     </div>
                   </section>
                 </div>
+                {isSaveTopicPresent&&(
+
                 <section className="flex flex-col gap-4 mt-5 text-primary">
                   <section className="flex  shadow-lg  rounded-3xl w-12 h-9 items-center justify-center">
                     <AiOutlineMenuFold
@@ -404,6 +416,8 @@ const LibraryTopicDetails = () => {
                     <RiDeleteBinLine className="hover:text-black cursor-pointer text-lg" />
                   </section>
                 </section>
+                )}
+
               </section>
 
               {chats.length > 0 && (

@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Aside from "../../../../layout/aside/Aside";
 import { logout } from "../../../../redux/slice/authSlice";
+import { useGetAllPostedContentQuery } from "../../../../redux/apis/apiSlice";
 
 
 
@@ -13,12 +14,38 @@ const AdminHeader = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [mobileNav, setMobileNav] = useState(false);
+  const { data: getAllPostedContent } = useGetAllPostedContentQuery()
+
   const notificationRef = useRef();
   const profileRef = useRef();
   const { pathname } = useLocation();
   const pathSplit = pathname.split("/");
   const page = pathSplit[pathSplit.length - 1];
   const pageName = page.split("-").join(" ");
+  const [search, setSearch] = useState('');
+  const [showResults, setShowResults] = useState(false);
+  console.log(getAllPostedContent?.content)
+  // Filter the content array by title (case insensitive)
+  const filteredContent = getAllPostedContent?.content?.filter(item =>
+    item.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const containerRef = useRef(null);
+
+  // Close the results when clicking outside of the container
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (containerRef.current && !containerRef.current.contains(event.target)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
   const user = JSON.parse(localStorage.getItem("user")); // Get user data from localStorage
   const mobileNavHandler = () => setMobileNav(!mobileNav);
@@ -87,17 +114,43 @@ const AdminHeader = () => {
             <IoMenu />
           </div>
         </div>
-        <div className="flex justify-between items-center">
-          <div className="relative w-full max-w-xs">
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full pl-10 pr-4 py-2 shadow-[#7090B014] border border-[#ACACAC] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#1D1D1F99]">
-              <IoIosSearch className="text-2xl font-bold" />
-            </span>
+      
+        <div className="p-4 relative" ref={containerRef}>
+          {/* Search Input */}
+          <div className="flex justify-between items-center">
+            <div className="relative w-full max-w-xs">
+              <input
+                type="text"
+                placeholder="Search"
+                value={search}
+                // Show results on focus so all titles appear initially when search is empty
+                onFocus={() => setShowResults(true)}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 shadow-[#7090B014] border border-[#ACACAC] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <span
+                onClick={() => setShowResults(true)}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#1D1D1F99] cursor-pointer"
+              >
+                <IoIosSearch className="text-2xl font-bold" />
+              </span>
+            </div>
           </div>
+
+          {/* Results List */}
+          {showResults && (
+            <div className="mt-4 bg-primary max-h-52 absolute rounded-lg custom-scroll overflow-y-scroll w-full">
+              {filteredContent.length > 0 ? (
+                filteredContent.map((item) => (
+                  <div key={item.id} className="p-2 hover:bg-gray-400 cursor-pointer border-b">
+                    {item.title}
+                  </div>
+                ))
+              ) : (
+                <div className="p-2 text-gray-500">No results found.</div>
+              )}
+            </div>
+          )}
         </div>
         <div className="flex items-center justify-between gap-4 xl:gap-6">
 

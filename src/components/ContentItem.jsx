@@ -90,20 +90,22 @@ const ContentItem = ({ content, folderId }) => {
     dispatch(setContentId(item));
 
     if (currentPath === "/admin/library-topic-details") {
-      setSearchParams({ id: item.id, folderId: folderId });
+      setSearchParams({ id: item.id});
     } else if (currentPath === "/coaches/coaches-library-topic-details") {
-      setSearchParams({ id: item.id, folderId: folderId });
+      setSearchParams({ id: item.id});
     } else if (currentPath === "/admin") {
       navigate(
-        `/admin/library-topic-details?id=${item.id}&folderId=${folderId}`
+        `/admin/library-topic-details?id=${item.id}`
       );
     } else if (currentPath === "/coaches") {
       navigate(
-        `/coaches/coaches-library-topic-details?id=${item.id}&folderId=${folderId}`
+        `/coaches/coaches-library-topic-details?id=${item.id}`
       );
     }
   };
 
+
+  
   return (
     <>
       <Modal
@@ -114,7 +116,7 @@ const ContentItem = ({ content, folderId }) => {
         <FolderSelection
           selectedFolder={selectedFolder}
           setSelectedFolder={setSelectedFolder}
-          folders={allFolders?.posted_topics}
+          folders={allFolders}
           closeModal={closeModal}
           handleMoveContent={handleMoveContent}
           isMoving={isMoving}
@@ -160,7 +162,7 @@ const ContentItem = ({ content, folderId }) => {
             >
               Move
             </button>
-            <button
+            {/* <button
               onClick={() => {
                 setEditModal(true);
                 setIsMenuOpen(false);
@@ -168,15 +170,15 @@ const ContentItem = ({ content, folderId }) => {
               className="block w-full text-left px-4 py-2 hover:bg-gray-200"
             >
               Rename
-            </button>
-            <button
+            </button> */}
+            {/* <button
               onClick={() => {
                 handleDeleteContent(), setIsMenuOpen(false);
               }}
               className="block w-full text-left px-4 py-2 hover:bg-red-200 text-red-600"
             >
               Delete
-            </button>
+            </button> */}
           </div>
         )}
       </div>

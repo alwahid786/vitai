@@ -16,9 +16,10 @@ import ContentTree from "../../../addBlog/components/ContentTree";
 
 function LibraryDashboardSideBar() {
   const [isAsideOpen, setIsAsideOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(true);
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [showMore, setShowMore] = useState({});
+  
   const {
     data: allFolders,
     isLoading,
@@ -78,9 +79,8 @@ function LibraryDashboardSideBar() {
         <h6 className="text-3xl font-bold text-black ">VITAI</h6>
       </div>
       <div
-        className={`hidden xl:block absolute top-15 cursor-pointer transition-all duration-300 ${
-          isAsideOpen ? "rotate-180 right-[-13%]" : "rotate-0 right-[-5%]"
-        }`}
+        className={`hidden xl:block absolute top-15 cursor-pointer transition-all duration-300 ${isAsideOpen ? "rotate-180 right-[-13%]" : "rotate-0 right-[-5%]"
+          }`}
         onClick={asideToggleHandler}
       >
         <ArrowIcon />
@@ -88,9 +88,8 @@ function LibraryDashboardSideBar() {
       {!isAsideOpen && (
         <div className="flex flex-col p-2 w-full overflow-auto  justify-between h-full">
           <div
-            className={`flex flex-col  justify-center gap-2 overflow-auto custom-scroll ${
-              isAsideOpen ? "items-center" : "items-start"
-            }`}
+            className={`flex flex-col  justify-center gap-2 overflow-auto custom-scroll ${isAsideOpen ? "items-center" : "items-start"
+              }`}
           >
             <div className="p-4 h-full w-full">
               {/* <div className="flex gap-2 mb-8 items-center ">
@@ -100,28 +99,21 @@ function LibraryDashboardSideBar() {
               <div className="project-container h-full">
                 <div
                   className="project-name flex mb-4 justify-between items-center rounded-lg cursor-pointer p-2 hover:bg-[#E0E0E0] transition-all duration-300"
-                  onClick={handleDropdownToggle}
+                  // onClick={handleDropdownToggle}
                 >
-                  
+
                   <span className="text-[#393838] text-sm font-semibold">
                     Topic
                   </span>
                   <span
-                    className={`text-[#393838]  dropdown-icon transition-all duration-400 ${
-                      showDropdown ? "rotate-180" : "rotate-0"
-                    }`}
+                    className={`text-[#393838]  dropdown-icon transition-all duration-400 ${showDropdown ? "rotate-180" : "rotate-0"
+                      }`}
                   >
                     <IoIosArrowDown />
                   </span>
                 </div>
                 {showDropdown && (
                   <>
-                    <div className="dropdown-content   custom-scroll   overflow-auto">
-                      <FolderTree
-                        allFolders={allFolders}
-                        addArticlesHandler={addArticlesHandler}
-                      />
-                    </div>
                     <div className="mt-4">
                       <text className="text-sm font-semibold text-[#444444]">
                         SAVED TOPICS
@@ -131,6 +123,13 @@ function LibraryDashboardSideBar() {
                         addArticlesHandler={addArticlesHandler}
                       />
                     </div>
+                    <div className="dropdown-content   custom-scroll   overflow-auto">
+                      <FolderTree
+                        allFolders={allFolders}
+                        addArticlesHandler={addArticlesHandler}
+                      />
+                    </div>
+
                   </>
                 )}
               </div>
